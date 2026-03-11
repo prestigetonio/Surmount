@@ -17,5 +17,11 @@ export default defineConfig({
     alias: {
       'cesium': path.resolve(__dirname, 'node_modules/cesium')
     }
-  }
+  },
+  build: {
+    target: 'esnext',
+  },
+  optimizeDeps: {
+    esbuildOptions: { target: 'esnext' },
+  },
 });
