@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  backend:
+    container_name: surmount-back
+    build:
+      context: ./back
+    ports:
+      - "3000:3000"
+
+  frontend:
+    container_name: surmount-front
+    build:
+      context: ./front
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
