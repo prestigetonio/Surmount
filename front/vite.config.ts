@@ -18,6 +18,11 @@ export default defineConfig({
       'cesium': path.resolve(__dirname, 'node_modules/cesium')
     }
   },
+  server: {
+    proxy: {
+      '/api': process.env.VITE_BACKEND_URL || 'http://localhost:3000',
+    },
+  },
   build: {
     target: 'esnext',
   },

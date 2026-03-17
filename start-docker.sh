@@ -24,5 +24,8 @@ else
   echo "----------No container to delete------------------------"
 fi
 
+echo "----------Stopping existing containers---------------------"
+sudo docker compose down
+
 echo "----------Building Docker images and starting containers---------------------"
-sudo docker-compose up --build
+sudo docker compose up --build

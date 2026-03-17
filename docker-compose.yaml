@@ -1,12 +1,36 @@
 version: "3.9"
 
 services:
+  postgres:
+    container_name: surmount-db
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: surmount
+      POSTGRES_PASSWORD: surmount
+      POSTGRES_DB: surmount
+    volumes:
+      - surmount-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U surmount"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     container_name: surmount-back
     build:
       context: ./back
     ports:
-      - "3000:3000"
+      - "3001:3000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: surmount
+      DB_PASSWORD: surmount
+      DB_NAME: surmount
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   frontend:
     container_name: surmount-front
@@ -14,5 +38,10 @@ services:
       context: ./front
     ports:
       - "5173:5173"
+    environment:
+      VITE_BACKEND_URL: http://backend:3000
     depends_on:
       - backend
+
+volumes:
+  surmount-db-data:

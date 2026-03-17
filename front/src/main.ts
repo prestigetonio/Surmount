@@ -15,17 +15,33 @@ declare global {
 window.CESIUM_BASE_URL = '/cesium/';
 
 injectUI();
-
 const points: PointData[] = [];
 const viewer = await createViewer();
-
 initPanel();
+try {
+    const res = await fetch('/api/coordinates');
+    const existing: { name: string; latitude: number; longitude: number; altitude: number; added_at: string }[] = await res.json();
+    for (const pt of existing) {
+        const d = new Date(pt.added_at);
+        points.push({
+            name: pt.name,
+            lat: pt.latitude,
+            lon: pt.longitude,
+            alt: pt.altitude,
+            addedAt: `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`,
+        });
+        const cartesian = Cesium.Cartesian3.fromDegrees(pt.longitude, pt.latitude, pt.altitude);
+        addMarker(viewer, cartesian, pt.name);
+    }
+    renderPanel(points);
+} catch (err) {
+    console.error('Failed to load coordinates from backend:', err);
+}
 
 initModal((cartesian: Cesium.Cartesian3, name: string) => {
     const trimmed = name.trim() || 'sans nom';
     const carto = Cesium.Cartographic.fromCartesian(cartesian);
     const now = new Date();
-
 
     const lat = Cesium.Math.toDegrees(carto.latitude);
     const lon = Cesium.Math.toDegrees(carto.longitude);
@@ -37,15 +53,11 @@ initModal((cartesian: Cesium.Cartesian3, name: string) => {
         addedAt: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`,
     });
 
-    // Send coordinates to backend
     fetch('/api/coordinates', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ latitude: lat, longitude: lon }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed, latitude: lat, longitude: lon, altitude: carto.height }),
     }).catch((err) => {
-        // Optionally handle error
         console.error('Failed to send coordinates to backend:', err);
     });
 
