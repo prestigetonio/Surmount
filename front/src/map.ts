@@ -12,7 +12,6 @@ export async function createViewer(): Promise<Cesium.Viewer> {
         timeline: false,
         fullscreenButton: false,
     });
-
     viewer.imageryLayers.removeAll();
     viewer.imageryLayers.addImageryProvider(
         await Cesium.ArcGisMapServerImageryProvider.fromUrl(
@@ -24,10 +23,8 @@ export async function createViewer(): Promise<Cesium.Viewer> {
             url: 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
         })
     );
-
     viewer.scene.globe.depthTestAgainstTerrain = true;
     viewer.resolutionScale = 1.5;
-
     viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(0.8, 44.2, 380000),
         orientation: {
@@ -37,7 +34,6 @@ export async function createViewer(): Promise<Cesium.Viewer> {
         },
         duration: 2,
     });
-
     viewer.entities.add({
         position: Cesium.Cartesian3.fromDegrees(0.5, 42.7, 2800),
         label: {
@@ -56,7 +52,6 @@ export async function createViewer(): Promise<Cesium.Viewer> {
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
         },
     });
-
     return viewer;
 }
 

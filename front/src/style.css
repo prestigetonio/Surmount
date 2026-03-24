@@ -255,3 +255,40 @@ body {
     font-size: 11px;
     letter-spacing: 0.05em;
 }
+
+.weather-section {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.weather-risk {
+    padding: 6px 8px;
+    margin-bottom: 8px;
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.risk-label {
+    font-size: 8px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.06em;
+}
+
+.risk-value {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.04em;
+}
+
+.weather-loading {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.04em;
+    font-style: italic;
+}

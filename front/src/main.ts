@@ -1,11 +1,10 @@
 import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 import './style.css';
-
 import { addMarker, createViewer } from './map';
 import { initModal, openModal } from './modal';
 import { initPanel, renderPanel } from './panel';
-import type { PointData } from './types';
+import type { PointData, WeatherData } from './types';
 import { injectUI } from './ui';
 
 declare global {
@@ -18,6 +17,16 @@ injectUI();
 const points: PointData[] = [];
 const viewer = await createViewer();
 initPanel();
+async function fetchMountainData(lat: number, lon: number): Promise<WeatherData | undefined> {
+    try {
+        const r = await fetch(`/api/mountain-data?lat=${lat}&lon=${lon}`);
+        if (!r.ok) return undefined;
+        return await r.json() as WeatherData;
+    } catch {
+        return undefined;
+    }
+}
+
 try {
     const res = await fetch('/api/coordinates');
     const existing: { name: string; latitude: number; longitude: number; altitude: number; added_at: string }[] = await res.json();
@@ -34,6 +43,11 @@ try {
         addMarker(viewer, cartesian, pt.name);
     }
     renderPanel(points);
+    for (let i = 0; i < points.length; i++) {
+        fetchMountainData(points[i].lat, points[i].lon).then(w => {
+            if (w) { points[i].weather = w; renderPanel(points); }
+        });
+    }
 } catch (err) {
     console.error('Failed to load coordinates from backend:', err);
 }
@@ -63,6 +77,11 @@ initModal((cartesian: Cesium.Cartesian3, name: string) => {
 
     renderPanel(points);
     addMarker(viewer, cartesian, trimmed);
+
+    const pointIndex = points.length - 1;
+    fetchMountainData(lat, lon).then(w => {
+        if (w) { points[pointIndex].weather = w; renderPanel(points); }
+    });
 });
 
 viewer.screenSpaceEventHandler.setInputAction((click: any) => {
