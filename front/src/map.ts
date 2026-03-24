@@ -11,6 +11,9 @@ export async function createViewer(): Promise<Cesium.Viewer> {
         animation: false,
         timeline: false,
         fullscreenButton: false,
+        contextOptions: {
+            webgl: { powerPreference: 'low-power' },
+        },
     });
     viewer.imageryLayers.removeAll();
     viewer.imageryLayers.addImageryProvider(
@@ -24,7 +27,9 @@ export async function createViewer(): Promise<Cesium.Viewer> {
         })
     );
     viewer.scene.globe.depthTestAgainstTerrain = true;
-    viewer.resolutionScale = 1.5;
+    viewer.resolutionScale = 1.0;
+    viewer.scene.globe.maximumScreenSpaceError = 4;
+    viewer.scene.requestRenderMode = true;
     viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(0.8, 44.2, 380000),
         orientation: {
