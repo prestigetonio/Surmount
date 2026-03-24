@@ -30,11 +30,18 @@ app.use(bodyParser.json());
 
 app.post('/api/coordinates', async (req: Request, res: Response) => {
     const { name, latitude, longitude, altitude } = req.body;
-    await pool.query(
-        'INSERT INTO coordinates (name, latitude, longitude, altitude) VALUES ($1, $2, $3, $4)',
+    const result = await pool.query(
+        'INSERT INTO coordinates (name, latitude, longitude, altitude) VALUES ($1, $2, $3, $4) RETURNING id',
         [name || 'sans nom', latitude, longitude, altitude || 0]
     );
-    res.status(200).json({ message: 'Coordinates received', latitude, longitude });
+    res.status(200).json({ id: result.rows[0].id, latitude, longitude });
+});
+
+app.delete('/api/coordinates/:id', async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id as string);
+    if (isNaN(id)) return res.status(400).json({ error: 'ID invalide' });
+    await pool.query('DELETE FROM coordinates WHERE id = $1', [id]);
+    res.status(200).json({ message: 'Point supprimé' });
 });
 
 app.get('/api/coordinates', async (_req: Request, res: Response) => {

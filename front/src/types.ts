@@ -9,6 +9,7 @@ export interface WeatherData {
 }
 
 export interface PointData {
+    id?: number;
     name: string;
     lat: number;
     lon: number;

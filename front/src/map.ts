@@ -55,8 +55,8 @@ export async function createViewer(): Promise<Cesium.Viewer> {
     return viewer;
 }
 
-export function addMarker(viewer: Cesium.Viewer, cartesian: Cesium.Cartesian3, name: string): void {
-    viewer.entities.add({
+export function addMarker(viewer: Cesium.Viewer, cartesian: Cesium.Cartesian3, name: string): Cesium.Entity {
+    return viewer.entities.add({
         position: cartesian,
         point: {
             pixelSize: 10,
@@ -82,4 +82,8 @@ export function addMarker(viewer: Cesium.Viewer, cartesian: Cesium.Cartesian3, n
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
         },
     });
+}
+
+export function removeMarker(viewer: Cesium.Viewer, entity: Cesium.Entity): void {
+    viewer.entities.remove(entity);
 }

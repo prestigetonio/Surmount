@@ -30,16 +30,20 @@ export function initPanel(): void {
     panelClose().addEventListener('click', () => sidePanel().classList.remove('open'));
 }
 
-export function renderPanel(points: PointData[]): void {
+export function renderPanel(points: PointData[], onDelete: (index: number) => void): void {
     panelEmpty().style.display = points.length === 0 ? 'flex' : 'none';
     panelList().querySelectorAll('.point-card').forEach(el => el.remove());
     const riskColors = ['', '#4CAF50', '#8BC34A', '#FFC107', '#FF5722', '#F44336'];
-    for (const p of points) {
+    for (let i = 0; i < points.length; i++) {
+        const p = points[i];
         const card = document.createElement('div');
         card.className = 'point-card';
         const weatherHtml = buildWeatherHtml(p.weather, riskColors);
         card.innerHTML = `
-            <div class="point-card-name">${p.name}</div>
+            <div class="point-card-header">
+                <span class="point-card-name">${p.name}</span>
+                <button class="btn-delete" title="Supprimer">✕</button>
+            </div>
             <div class="point-card-info">
                 <div class="info-item"><span class="info-label">LAT</span><span class="info-value">${p.lat.toFixed(4)}</span></div>
                 <div class="info-item"><span class="info-label">LON</span><span class="info-value">${p.lon.toFixed(4)}</span></div>
@@ -47,6 +51,7 @@ export function renderPanel(points: PointData[]): void {
                 <div class="info-item"><span class="info-label">T</span><span class="info-value">${p.addedAt}</span></div>
             </div>
             ${weatherHtml}`;
+        card.querySelector('.btn-delete')!.addEventListener('click', () => onDelete(i));
         panelList().appendChild(card);
     }
     counterEl().textContent = String(points.length);
